@@ -2,25 +2,35 @@
 Questions module
 """
 
-from ..hfpipeline import HFPipeline
+import torch
+import torch.nn.functional as F
+
+from ..hfmodel import HFModel
 
 
-class Questions(HFPipeline):
+class Questions(HFModel):
     """
     Runs extractive QA for a series of questions and contexts.
     """
 
-    def __init__(self, path=None, quantize=False, gpu=True, model=None, **kwargs):
-        super().__init__("question-answering", path, quantize, gpu, model, **kwargs)
+    def __init__(self, path=None, quantize=False, gpu=True, batch=64, **kwargs):
+        # Default model
+        path = path if path else "distilbert-base-cased-distilled-squad"
 
-    def __call__(self, questions, contexts, workers=0):
+        # Call parent constructor
+        super().__init__(path, quantize, gpu, batch)
+
+        # Load model and tokenizer
+        self.model, self.tokenizer = self.load(path, "question-answering", **kwargs)
+
+    def __call__(self, questions, contexts, **kwargs):
         """
         Runs a extractive question-answering model against each question-context pair, finding the best answers.
 
         Args:
             questions: list of questions
             contexts: list of contexts to pull answers from
-            workers: number of concurrent workers to use for processing data, defaults to None
+            kwargs: additional keyword arguments
 
         Returns:
             list of answers
@@ -30,11 +40,25 @@ class Questions(HFPipeline):
 
         for x, question in enumerate(questions):
             if question and contexts[x]:
-                # Run the QA pipeline
-                result = self.pipeline(question=question, context=contexts[x], num_workers=workers)
+                # Tokenize inputs
+                tokens = self.tokenizer(question, contexts[x], truncation="only_second", return_tensors="pt").to(self.device)
 
-                # Get answer and score
-                answer, score = result["answer"], result["score"]
+                # Generate outputs
+                with torch.no_grad():
+                    outputs = self.model(**tokens)
+
+                # Unpack results
+                startlogits, endlogits = (outputs.start_logits, outputs.end_logits) if hasattr(outputs, "start_logits") else outputs
+
+                # Get best span as answer
+                start = startlogits.argmax()
+                end = endlogits.argmax()
+                answer = self.answer(contexts[x], tokens, start, end)
+
+                # Calculate span score
+                startprob = F.softmax(startlogits, dim=-1)[0]
+                endprob = F.softmax(endlogits, dim=-1)[0]
+                score = startprob[start] * endprob[end]
 
                 # Require score to be at least 0.05
                 if score < 0.05:
@@ -46,3 +70,24 @@ class Questions(HFPipeline):
                 answers.append(None)
 
         return answers
+
+    def answer(self, context, tokens, start, end):
+        """
+        Extracts an answer snippet from context.
+
+        Args:
+            context: context
+            tokens: tokenized inputs
+            start: start index of answer
+            end: end index of answer
+
+        Returns:
+            answer
+        """
+
+        startword = tokens.token_to_word(start)
+        endword = tokens.token_to_word(end)
+        startindex = tokens.word_to_chars(startword, sequence_index=1)[0]
+        endindex = tokens.word_to_chars(endword, sequence_index=1)[1]
+
+        return context[startindex:endindex]
