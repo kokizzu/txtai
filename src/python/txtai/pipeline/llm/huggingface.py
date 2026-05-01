@@ -5,7 +5,6 @@ Hugging Face module
 from threading import Thread
 
 from transformers import AutoModelForImageTextToText, TextIteratorStreamer
-from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 
 from ...models import Models
 
@@ -263,14 +262,7 @@ class SequencesPipeline(HFModel):
         super().__init__(path, quantize, gpu, batch)
 
         # Text2Text Generation model
-        if isinstance(path, tuple):
-            self.model, self.tokenizer = path
-        else:
-            self.model = AutoModelForSeq2SeqLM.from_pretrained(path, **kwargs)
-            self.tokenizer = AutoTokenizer.from_pretrained(path)
-
-        # Move model to device
-        self.model = self.model.to(self.device)
+        self.model, self.tokenizer = self.load(path, "text2text-generation", **kwargs)
 
         # Set pipeline task
         self.task = "text2text-generation"

@@ -206,6 +206,7 @@ class Models:
             "default": AutoModel.from_pretrained,
             "question-answering": AutoModelForQuestionAnswering.from_pretrained,
             "summarization": AutoModelForSeq2SeqLM.from_pretrained,
+            "text2text-generation": AutoModelForSeq2SeqLM.from_pretrained,
             "text-classification": AutoModelForSequenceClassification.from_pretrained,
             "zero-shot-classification": AutoModelForSequenceClassification.from_pretrained,
         }

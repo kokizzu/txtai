@@ -57,6 +57,9 @@ class HFModel(Tensors):
         # Load model
         model = Models.load(model, task=task, modelargs=kwargs).to(self.device)
 
+        # Apply model initialization routines
+        model = self.prepare(model)
+
         # Load tokenizer
         tokenizer = AutoTokenizer.from_pretrained(tokenizer) if isinstance(tokenizer, str) else tokenizer
 

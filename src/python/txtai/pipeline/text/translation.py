@@ -11,7 +11,6 @@ except ImportError:
     STATICVECTORS = False
 
 from huggingface_hub.hf_api import HfApi
-from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 
 from ...models import Models
 from ..hfmodel import HFModel
@@ -231,7 +230,7 @@ class Translation(HFModel):
         # Determine best translation model to use, load if necessary and return
         path = self.modelpath(source, target)
         if path not in self.models:
-            self.models[path] = self.load(path)
+            self.models[path] = self.load(path, "text2text-generation")
 
         return (path,) + self.models[path]
 
@@ -263,25 +262,6 @@ class Translation(HFModel):
 
         # Default model if no suitable model found
         return self.path
-
-    def load(self, path):
-        """
-        Loads a model specified by path.
-
-        Args:
-            path: model path
-
-        Returns:
-            (model, tokenizer)
-        """
-
-        model = AutoModelForSeq2SeqLM.from_pretrained(path)
-        tokenizer = AutoTokenizer.from_pretrained(path)
-
-        # Apply model initialization routines
-        model = self.prepare(model)
-
-        return (model, tokenizer)
 
     def langid(self, languages, target):
         """
