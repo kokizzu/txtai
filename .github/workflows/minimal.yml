@@ -23,5 +23,5 @@ jobs:
 
       - name: Minimal install
         run: |
-          pip uninstall faiss-cpu msgpack torch
+          pip uninstall -y faiss-cpu msgpack torch
           python -c "import txtai"
