@@ -3,10 +3,14 @@ Late encoder module
 """
 
 import numpy as np
-import torch
 
 from ...models import Models, PoolingFactory
 from ..base import Pipeline
+
+# Conditional torch imports
+from ...util import TorchLib
+
+torch = TorchLib().torch()
 
 
 class LateEncoder(Pipeline):

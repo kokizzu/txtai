@@ -15,13 +15,17 @@ try:
 except ImportError:
     ONNX_RUNTIME = False
 
-from torch import nn
-from torch.onnx import export
-
 from transformers import AutoModel, AutoModelForQuestionAnswering, AutoModelForSequenceClassification, AutoTokenizer
 
 from ...models import PoolingFactory
 from ..tensors import Tensors
+
+# Conditional torch imports
+from ...util import TorchLib
+
+torchlib = TorchLib()
+torch = torchlib.torch()
+Module = torchlib.module()
 
 
 class HFOnnx(Tensors):
@@ -60,7 +64,7 @@ class HFOnnx(Tensors):
         output = output if output else BytesIO()
 
         # Export model to ONNX
-        export(
+        torch.onnx.export(
             ModelWrapper(model),
             (dummy,),
             output,
@@ -157,7 +161,7 @@ class HFOnnx(Tensors):
         return (inputs,) + config[task]
 
 
-class ModelWrapper(nn.Module):
+class ModelWrapper(Module):
     """
     Wraps an model to control named inputs for export.
     """

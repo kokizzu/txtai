@@ -3,7 +3,6 @@ PyTorch module
 """
 
 import numpy as np
-import torch
 
 try:
     from bitsandbytes import matmul_4bit
@@ -22,6 +21,11 @@ except ImportError:
     BNB = False
 
 from .numpy import NumPy
+
+# Conditional torch imports
+from ...util import TorchLib
+
+torch = TorchLib().torch()
 
 
 class Torch(NumPy):

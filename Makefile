@@ -52,6 +52,7 @@ coverage:
 	coverage run -m unittest discover -v -k testpipeline.testtrain -s ${TEST_DIR}
 	coverage run -m unittest discover -v -k testscoring -s ${TEST_DIR}
 	coverage run -m unittest discover -v -k testserialize -s ${TEST_DIR}
+	coverage run -m unittest discover -v -k testtorch -s ${TEST_DIR}
 	coverage run -m unittest discover -v -k testvectors -s ${TEST_DIR}
 	coverage run -m unittest discover -v -k testworkflow -s ${TEST_DIR}
 	coverage combine

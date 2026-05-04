@@ -5,16 +5,21 @@ Pooling module
 import json
 
 import numpy as np
-import torch
 
 from huggingface_hub.errors import HFValidationError
-from torch import nn
 from transformers.utils import cached_file
 
 from ..models import Models
 
+# Conditional torch imports
+from ...util import TorchLib
 
-class Pooling(nn.Module):
+torchlib = TorchLib()
+torch = torchlib.torch()
+Module = torchlib.module()
+
+
+class Pooling(Module):
     """
     Builds pooled vectors usings outputs from a transformers model.
     """

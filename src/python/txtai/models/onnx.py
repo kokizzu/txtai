@@ -11,14 +11,20 @@ except ImportError:
     ONNX_RUNTIME = False
 
 import numpy as np
-import torch
+
+import transformers
 
 from transformers import AutoConfig
 from transformers.configuration_utils import PretrainedConfig
-from transformers.modeling_outputs import SequenceClassifierOutput
-from transformers.modeling_utils import PreTrainedModel
 
 from .registry import Registry
+
+# Conditional torch imports
+from ..util import TorchLib
+
+torchlib = TorchLib()
+torch = torchlib.torch()
+PreTrainedModel = torchlib.pretrained()
 
 
 # pylint: disable=W0223
@@ -95,7 +101,7 @@ class OnnxModel(PreTrainedModel):
         # pylint: disable=E1101
         # Detect if logits is an output and return classifier output in that case
         if any(x.name for x in self.model.get_outputs() if x.name == "logits"):
-            return SequenceClassifierOutput(logits=torch.from_numpy(np.array(results[0])))
+            return transformers.modeling_outputs.SequenceClassifierOutput(logits=torch.from_numpy(np.array(results[0])))
 
         return torch.from_numpy(np.array(results))
 

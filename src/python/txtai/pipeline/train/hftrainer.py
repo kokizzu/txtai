@@ -5,8 +5,6 @@ Hugging Face Transformers trainer wrapper module
 import os
 import sys
 
-import torch
-
 from transformers import (
     AutoConfig,
     AutoModelForCausalLM,
@@ -34,6 +32,11 @@ except ImportError:
 from ...data import Labels, Questions, Sequences, Texts
 from ...models import Models, TokenDetection
 from ..tensors import Tensors
+
+# Conditional torch imports
+from ...util import TorchLib
+
+torch = TorchLib().torch()
 
 
 class HFTrainer(Tensors):

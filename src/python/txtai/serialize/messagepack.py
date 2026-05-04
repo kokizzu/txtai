@@ -2,9 +2,15 @@
 MessagePack module
 """
 
-import msgpack
-from msgpack import Unpacker
-from msgpack.exceptions import ExtraData
+# Conditional import
+try:
+    import msgpack
+    from msgpack import Unpacker
+    from msgpack.exceptions import ExtraData
+
+    MSGPACK = True
+except ImportError:
+    MSGPACK = False
 
 from .base import Serialize
 from .errors import SerializeError
@@ -18,6 +24,9 @@ class MessagePack(Serialize):
     def __init__(self, streaming=False, **kwargs):
         # Parent constructor
         super().__init__()
+
+        if not MSGPACK:
+            raise ImportError("MessagePack is not available - install to msgpack enable")
 
         # Streaming unpacker
         self.streaming = streaming

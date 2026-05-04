@@ -4,8 +4,6 @@ Models module
 
 import os
 
-import torch
-
 from transformers import (
     AutoConfig,
     AutoModel,
@@ -17,6 +15,11 @@ from transformers import (
 from transformers.models.auto.modeling_auto import MODEL_FOR_IMAGE_TEXT_TO_TEXT_MAPPING_NAMES
 
 from .onnx import OnnxModel
+
+# Conditional torch imports
+from ..util import TorchLib
+
+torch = TorchLib().torch()
 
 
 class Models:

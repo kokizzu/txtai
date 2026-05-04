@@ -2,10 +2,12 @@
 Tokens module
 """
 
-import torch
+from ..util import TorchLib
+
+Dataset = TorchLib().dataset()
 
 
-class Tokens(torch.utils.data.Dataset):
+class Tokens(Dataset):
     """
     Default dataset used to hold tokenized data.
     """

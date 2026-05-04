@@ -7,11 +7,21 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-python@v6
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Install Python
+        uses: actions/setup-python@v6
         with:
           python-version: "3.10"
-      - run: |
+
+      - name: Base install
+        run: |
           pip install -U pip wheel
           pip install .
+          python -c "import txtai"
+
+      - name: Minimal install
+        run: |
+          pip uninstall faiss-cpu msgpack torch
           python -c "import txtai"

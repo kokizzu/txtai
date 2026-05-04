@@ -7,7 +7,11 @@ import re
 import types
 
 import numpy as np
-import torch
+
+# Conditional torch imports
+from ...util import TorchLib
+
+torch = TorchLib().torch()
 
 # Logging configuration
 logger = logging.getLogger(__name__)

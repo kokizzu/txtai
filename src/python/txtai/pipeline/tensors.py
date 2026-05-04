@@ -2,9 +2,12 @@
 Tensor processing framework module
 """
 
-import torch
-
 from .base import Pipeline
+
+# Conditional torch imports
+from ..util import TorchLib
+
+torch = TorchLib().torch()
 
 
 class Tensors(Pipeline):

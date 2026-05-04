@@ -2,9 +2,12 @@
 Mean module
 """
 
-import torch
-
 from .base import Pooling
+
+# Conditional torch imports
+from ...util import TorchLib
+
+torch = TorchLib().torch()
 
 
 class MeanPooling(Pooling):

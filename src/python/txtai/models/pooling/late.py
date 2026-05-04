@@ -3,14 +3,18 @@ Late module
 """
 
 import numpy as np
-import torch
 
 from safetensors import safe_open
-from torch import nn
 from transformers.utils import cached_file
 
 from .base import Pooling
 from .muvera import Muvera
+
+# Conditional torch imports
+from ...util import TorchLib
+
+torchlib = TorchLib()
+torch = torchlib.torch()
 
 
 class LatePooling(Pooling):
@@ -45,7 +49,7 @@ class LatePooling(Pooling):
             weights = f.get_tensor("linear.weight")
 
             # Load weights into linear layer
-            self.linear = nn.Linear(weights.shape[1], weights.shape[0], bias=False, device=self.device, dtype=weights.dtype)
+            self.linear = torch.nn.Linear(weights.shape[1], weights.shape[0], bias=False, device=self.device, dtype=weights.dtype)
             with torch.no_grad():
                 self.linear.weight.copy_(weights)
 

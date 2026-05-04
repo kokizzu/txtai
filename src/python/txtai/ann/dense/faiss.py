@@ -16,8 +16,14 @@ if platform.system() == "Darwin" or os.name == "nt":
 
 import numpy as np
 
-from faiss import index_factory, IO_FLAG_MMAP, METRIC_INNER_PRODUCT, read_index, write_index
-from faiss import index_binary_factory, read_index_binary, write_index_binary, IndexBinaryIDMap
+# Conditional import
+try:
+    from faiss import index_factory, IO_FLAG_MMAP, METRIC_INNER_PRODUCT, read_index, write_index
+    from faiss import index_binary_factory, read_index_binary, write_index_binary, IndexBinaryIDMap
+
+    FAISS = True
+except ImportError:
+    FAISS = False
 
 from ..base import ANN
 
@@ -29,6 +35,9 @@ class Faiss(ANN):
 
     def __init__(self, config):
         super().__init__(config)
+
+        if not FAISS:
+            raise ImportError('Faiss is not available - install "ann" extra to enable')
 
         # Scalar quantization
         quantize = self.config.get("quantize")

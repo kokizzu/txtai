@@ -5,7 +5,7 @@ Factory module
 from ...util import Resolver
 
 from .annoy import Annoy
-from .faiss import Faiss
+from .faiss import Faiss, FAISS
 from .ggml import GGML
 from .hnsw import HNSW
 from .numpy import NumPy
@@ -33,7 +33,7 @@ class ANNFactory:
 
         # ANN instance
         ann = None
-        backend = config.get("backend", "faiss")
+        backend = config.get("backend", "faiss" if FAISS else "numpy")
 
         # Create ANN instance
         if backend == "annoy":

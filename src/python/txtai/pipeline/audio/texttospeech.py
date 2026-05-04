@@ -20,7 +20,6 @@ import logging
 
 from io import BytesIO
 
-import torch
 import yaml
 
 import numpy as np
@@ -30,6 +29,11 @@ from transformers import SpeechT5Processor
 from transformers.utils import cached_file
 
 from ..base import Pipeline
+
+# Conditional torch imports
+from ...util import TorchLib
+
+torch = TorchLib().torch()
 
 # Logging configuration
 logger = logging.getLogger(__name__)

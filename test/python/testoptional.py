@@ -29,6 +29,7 @@ class TestOptional(unittest.TestCase):
             "croniter",
             "docling.document_converter",
             "duckdb",
+            "faiss",
             "fastapi",
             "ggml",
             "gliner",
@@ -41,6 +42,7 @@ class TestOptional(unittest.TestCase):
             "litellm",
             "llama_cpp",
             "model2vec",
+            "msgpack",
             "networkx",
             "nltk",
             "onnxmltools",
@@ -115,6 +117,9 @@ class TestOptional(unittest.TestCase):
         # Test dense methods
         with self.assertRaises(ImportError):
             ANNFactory.create({"backend": "annoy"})
+
+        with self.assertRaises(ImportError):
+            ANNFactory.create({"backend": "faiss"})
 
         with self.assertRaises(ImportError):
             ANNFactory.create({"backend": "ggml"})
@@ -309,6 +314,16 @@ class TestOptional(unittest.TestCase):
 
         with self.assertRaises(ImportError):
             Translation().detect(["test"])
+
+    def testSerialize(self):
+        """
+        Test missing msgpack dependency
+        """
+
+        from txtai.serialize import MessagePack
+
+        with self.assertRaises(ImportError):
+            MessagePack()
 
     def testScoring(self):
         """

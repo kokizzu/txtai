@@ -2,10 +2,12 @@
 Questions module
 """
 
-import torch
-import torch.nn.functional as F
-
 from ..hfmodel import HFModel
+
+# Conditional torch imports
+from ...util import TorchLib
+
+torch = TorchLib().torch()
 
 
 class Questions(HFModel):
@@ -56,8 +58,8 @@ class Questions(HFModel):
                 answer = self.answer(contexts[x], tokens, start, end)
 
                 # Calculate span score
-                startprob = F.softmax(startlogits, dim=-1)[0]
-                endprob = F.softmax(endlogits, dim=-1)[0]
+                startprob = torch.nn.functional.softmax(startlogits, dim=-1)[0]
+                endprob = torch.nn.functional.softmax(endlogits, dim=-1)[0]
                 score = startprob[start] * endprob[end]
 
                 # Require score to be at least 0.05
